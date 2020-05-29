@@ -1,8 +1,6 @@
 FROM centos:7
 
-MAINTAINER Erik Jacobs <erikmjacobs@gmail.com>
-
-ARG GOGS_VERSION="0.9.113"
+ARG GOGS_VERSION="0.11.91"
 
 LABEL name="Gogs - Go Git Service" \
       vendor="Gogs" \
@@ -13,18 +11,19 @@ LABEL name="Gogs - Go Git Service" \
       io.openshift.tags="gogs" \
       build-date="2017-04-02" \
       version="${GOGS_VERSION}" \
-      release="1"
+      release="1" \
+      maintainer="Caio Medeiros <camedeir@redhat.com>"
 
 ENV HOME=/var/lib/gogs
 
-COPY ./root /
-
-RUN curl -L -o /etc/yum.repos.d/gogs.repo https://dl.packager.io/srv/pkgr/gogs/pkgr/installer/el/7.repo && \
-    rpm --import https://rpm.packager.io/key && \
+RUN curl -L -o /etc/yum.repos.d/gogs.repo https://dl.packager.io/srv/gogs/gogs/master/installer/el/7.repo && \
+    rpm --import https://dl.packager.io/srv/gogs/gogs/key && \
     yum -y install epel-release && \
     yum -y --setopt=tsflags=nodocs install gogs-${GOGS_VERSION} nss_wrapper gettext && \
     yum -y clean all && \
     mkdir -p /var/lib/gogs
+
+COPY ./root /
 
 RUN /usr/bin/fix-permissions /var/lib/gogs && \
     /usr/bin/fix-permissions /home/gogs && \
